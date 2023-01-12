@@ -8,7 +8,23 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SportsMVC.styles.css" asp-append-version="true" />
 </head>
+<script type="text/javascript">
+    var txt=@ViewBag["msg"];
+
+    function response() {
+        var text = "Do you want to change your active status"
+        if (confirm(text) == true) {
+            window.location.href = '@Url.Action("ChangeActiveStatus", "User")';
+            alert("Active status changed successfully");
+        }
+        else {
+            return false;
+        }
+
+    }
+</script>
 <body>
+    <label hidden 
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -48,6 +64,9 @@
                         }
                         else
                         {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="ChangeActiveStatus">Active/Deactive</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Register">Register</a>
                             </li>

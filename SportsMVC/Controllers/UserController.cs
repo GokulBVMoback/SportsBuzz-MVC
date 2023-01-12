@@ -16,6 +16,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNet.Identity;
 using System.Net;
+using NuGet.Common;
 
 namespace SportsMVC.Controllers
 {
@@ -155,7 +156,9 @@ namespace SportsMVC.Controllers
         public ActionResult Notifications()
         {
             IEnumerable<String> notifications = null!;
-
+            string? token = HttpContext.Session.GetString(SessionKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
             var responseTask = client.GetAsync("User/UserNotifications");
             responseTask.Wait();
             var result = responseTask.Result;
@@ -213,6 +216,39 @@ namespace SportsMVC.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult ChangeActiveStatus()
+        {
+                HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, client.BaseAddress + "User/Changing_Active_Status");
+                string? token = HttpContext.Session.GetString(SessionKey);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                    parameter: token);
+                var postJob = client.SendAsync(req);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                //postJob.Wait();
+                //var postResult = postJob.Result;
+                var resultMessage = postResult.Content.ReadAsStringAsync().Result;
+                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+            ViewBag["msg"] = response.Message;
+
+            if (postResult.IsSuccessStatusCode)
+                {
+                    if (response.Status == true)
+                    {
+                    ViewBag["msg"]= response.Message;
+                        ModelState.AddModelError(string.Empty, response.Message!);
+                        return RedirectToAction("Index", "User");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, response.Message!);
+                        return View();
+                    }
+                }
+                ModelState.AddModelError(string.Empty, "server Error");
+                return View();
         }
     }
 }
