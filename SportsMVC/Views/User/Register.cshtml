@@ -1,0 +1,109 @@
+﻿@model Entities.Models.Registration
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Register</h1>
+
+<script type="text/javascript">
+    function validateForm() {
+        var fname = document.getElementById("fname");
+        if (fname.value == "") {
+            alert("First Name must be filled out");
+            return false;
+        }
+        var lname = document.getElementById("lname");
+        if (lname.value == "") {
+            alert("Last Name must be filled out");
+            return false;
+        }
+        var email = document.getElementById("email");
+        if (email.value == "") {
+            alert("Email must be filled out");
+            return false;
+        }
+        var pnum = document.getElementById("pnum");
+        if (pnum.value == "") {
+            alert("PhoneNum must be filled out");
+            return false;
+        }
+        var urole = document.getElementById("userrole");
+        if (urole.value == "") {
+            alert("UserRole must be filled out");
+            return false;
+        }
+        var password = document.getElementById("password");
+        if (password.value == "") {
+            alert("Password must be filled out");
+            return false;
+        }
+        var cpassword = document.getElementById("cpassword");
+        if (cpassword.value == "") {
+            alert("ConfirmPassword must be filled out");
+            return false;
+        }
+        if (password != cpassword) {
+            alert("Password and ConfirmPassword are not matched");
+            return false;
+        }
+    }
+</script>
+
+
+<h4>Registration</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" id="fname" class="form-control" type="text" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" id="lname" class="form-control" type="text" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" id="email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNum" class="control-label"></label>
+                <input asp-for="PhoneNum" id="pnum" class="form-control" type="number" />
+                <span asp-validation-for="PhoneNum" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserRole" class="control-label"></label>
+                <input asp-for="UserRole" id="userrole" class="form-control" type="number" />
+                <span asp-validation-for="UserRole" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" id="password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input asp-for="ConfirmPassword" id="cpassword" class="form-control" type="password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Register" class="btn btn-primary" onclick="return validateForm()" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="LogIn">Log In</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
