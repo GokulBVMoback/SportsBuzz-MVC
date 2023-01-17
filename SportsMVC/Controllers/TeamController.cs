@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.DbModels;
+using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace SportsMVC.Controllers
 {
@@ -21,30 +23,50 @@ namespace SportsMVC.Controllers
             client = clientFactory.CreateClient("someClient");
         }
         // GET: TeamController
-        public ActionResult Index()
+        public ActionResult Index(string city)
         {
             IEnumerable<TeamList> teams = null!;
-
-            var responseTask = client.GetAsync("Team/");
-            responseTask.Wait();
-            var result = responseTask.Result;
-            if (result.IsSuccessStatusCode)
+            if(city==null)
             {
-                var readJob = result.Content.ReadFromJsonAsync<IList<TeamList>>();
-                readJob.Wait();
-                teams = readJob.Result!;
+                var responseTask = client.GetAsync("Team/");
+                responseTask.Wait();
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readJob = result.Content.ReadFromJsonAsync<IList<TeamList>>();
+                    readJob.Wait();
+                    teams = readJob.Result!;
+                }
+                else
+                {
+                    teams = Enumerable.Empty<TeamList>();
+                    ModelState.AddModelError(string.Empty, "server error");
+                }
+                return View(teams);
             }
             else
             {
-                teams = Enumerable.Empty<TeamList>();
-                ModelState.AddModelError(string.Empty, "server error");
+                var postJob = client.GetAsync("Team/City?City=" + city);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                if (postResult.IsSuccessStatusCode)
+                {
+                    var readJob = postResult.Content.ReadFromJsonAsync<IList<TeamList>>();
+                    readJob.Wait();
+                    teams = readJob.Result!;
+                    return View(teams);
+                }
+                ModelState.AddModelError(string.Empty, "server Error");
+                return View(teams);
             }
-
-            return View(teams);
         }
 
         public ActionResult SearchByTeamName(string team)
         {
+            if(team==null)
+            {
+                return RedirectToAction("Index", "Team");
+            }
             string? token = HttpContext.Session.GetString(SessionKey);
             TeamList teams = null!;
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
@@ -65,73 +87,56 @@ namespace SportsMVC.Controllers
             return View(teams);
         }
 
-        // GET: TeamController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult MyTeam()
         {
+            string? token = HttpContext.Session.GetString(SessionKey);
+            IEnumerable<TeamList> teams = null!;
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
+            var postJob = client.GetAsync("Team/MyTeams");
+            postJob.Wait();
+            var postResult = postJob.Result;
+            //var resultMessage = postResult.Content.ReadAsStringAsync().Result;
+            //ground = JsonConvert.DeserializeObject<GroundList>(resultMessage)!;
+            if (postResult.IsSuccessStatusCode)
+            {
+                var readJob = postResult.Content.ReadFromJsonAsync<IEnumerable<TeamList>>();
+                readJob.Wait();
+                teams = readJob.Result!;
+                return View(teams);
+            }
+            ModelState.AddModelError(string.Empty, "server Error");
+            return View(teams);
+        }
+
+        public ActionResult ChangeActiveStatus(int teamId)
+        {
+            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, client.BaseAddress + "Team/Changing_Active_Status?teamID="+teamId);
+            string? token = HttpContext.Session.GetString(SessionKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
+            var postJob = client.SendAsync(req);
+            postJob.Wait();
+            var postResult = postJob.Result;
+            //postJob.Wait();
+            //var postResult = postJob.Result;
+            var resultMessage = postResult.Content.ReadAsStringAsync().Result;
+            response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+            if (postResult.IsSuccessStatusCode)
+            {
+                if (response.Status == true)
+                {
+                    ModelState.AddModelError(string.Empty, response.Message!);
+                    return RedirectToAction("MyTeam", "Team");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, response.Message!);
+                    return RedirectToAction("MyTeam", "Team");
+                }
+            }
+            ModelState.AddModelError(string.Empty, "server Error");
             return View();
-        }
-
-        // GET: TeamController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: TeamController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: TeamController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: TeamController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: TeamController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: TeamController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }

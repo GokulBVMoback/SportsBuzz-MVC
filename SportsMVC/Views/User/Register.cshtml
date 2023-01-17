@@ -9,6 +9,7 @@
 
 <script type="text/javascript">
     function validateForm() {
+        var mailformat = /^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         var fname = document.getElementById("fname");
         if (fname.value == "") {
             alert("First Name must be filled out");
@@ -23,6 +24,11 @@
         if (email.value == "") {
             alert("Email must be filled out");
             return false;
+        }
+        else{
+            (!email.match(mailformat))
+        alert("Invalid email address");
+        return false;
         }
         var pnum = document.getElementById("pnum");
         if (pnum.value == "") {

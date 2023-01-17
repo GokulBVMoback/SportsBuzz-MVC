@@ -6,16 +6,22 @@
 }
 <script type="text/javascript">
     function validateForm() {
+        var mailformat = /^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         var email = document.getElementById("email");
         if (email.value == "") {
             alert("Email must be filled out");
         return false;
-  }
+        }
         var password = document.getElementById("password");
         if (password.value == "") {
             alert("Password must be filled out");
             return false;
-  }
+        }
+        else
+        {
+            email.match(mailformat);
+        }
+
 }
 </script>
 

@@ -37,6 +37,48 @@ namespace SportsMVC.Controllers
             return test;
         }
 
+        public static string SecretKey => "MySecretKey";
+        public static SymmetricSecurityKey SigningKey => new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ClaimsPrincipal? pricipal(string jwtToken,string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+                var token = jwtToken;
+
+                SecurityToken validatedToken = null;
+
+                TokenValidationParameters validationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = "http://localhost:9001/",
+
+                    ValidateAudience = true,
+                    ValidAudience = "http://localhost:9000",
+
+                    ValidateLifetime = true,
+                    IssuerSigningKey = SigningKey
+                };
+
+                JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+
+                try
+                {
+                    ClaimsPrincipal principal = handler.ValidateToken(token, validationParameters, out validatedToken);
+                    return principal;
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
+            }
+            return null;
+        }
+
         public static ClaimsPrincipal ValidateToken(string jwtToken)
         {
             var token = new JwtSecurityTokenHandler().ReadJwtToken(jwtToken);

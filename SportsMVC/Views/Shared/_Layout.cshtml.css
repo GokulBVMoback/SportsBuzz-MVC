@@ -7,6 +7,10 @@ a.navbar-brand {
     word-break: break-all;
 }
 
+nav.navbar.navbar-expand-sm.navbar-toggleable-sm.navbar-light.bg-white.border-bottom.box-shadow.mb-3 {
+    background-color: darkcyan !important;
+}
+
 a {
     color: #0077cc;
 }

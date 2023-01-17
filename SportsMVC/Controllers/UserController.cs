@@ -17,6 +17,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNet.Identity;
 using System.Net;
 using NuGet.Common;
+using System.Web;
 
 namespace SportsMVC.Controllers
 {
@@ -39,7 +40,7 @@ namespace SportsMVC.Controllers
             IEnumerable<UserDisplay> users = null!;
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
                 parameter: token);
-            var responseTask = client.GetAsync("User/");
+            var responseTask = client.GetAsync("User/UserDetails");
             responseTask.Wait();
             var result = responseTask.Result;
             if (result.IsSuccessStatusCode)
@@ -51,6 +52,29 @@ namespace SportsMVC.Controllers
             else
             {
                 users = Enumerable.Empty<UserDisplay>();
+                ModelState.AddModelError(string.Empty, "server error");
+            }
+
+            return View(users);
+        }
+
+        public ActionResult Profile()
+        {
+            string? token = HttpContext.Session.GetString(SessionKey);
+            UserDisplay users = null!;
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
+            var responseTask = client.GetAsync("User/MyDetails");
+            responseTask.Wait();
+            var result = responseTask.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                var readJob = result.Content.ReadFromJsonAsync<UserDisplay>();
+                readJob.Wait();
+                users = readJob.Result!;
+            }
+            else
+            {
                 ModelState.AddModelError(string.Empty, "server error");
             }
 
@@ -75,15 +99,18 @@ namespace SportsMVC.Controllers
                 var resultMessage = postResult.Content.ReadAsStringAsync().Result;
                 response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
                 HttpContext.Session.SetString(SessionKey, response.Message!);
-                string token=GetToken(SessionKey)!;
                 if (postResult.IsSuccessStatusCode)
                 {
                     if (response.Status == true)
                     {
-                        var token2 = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                        var identity = new ClaimsPrincipal(new ClaimsIdentity(token2.Claims));
-                        var identity2 = User.Identity as ClaimsIdentity;
-                        identity2.AddClaims(token2.Claims);
+                        var token = new JwtSecurityTokenHandler().ReadJwtToken(response.Message);
+                        var identity = new ClaimsPrincipal(new ClaimsIdentity(token.Claims));
+                        //var identity = (ClaimsIdentity)User.Identity;
+                        //identity.AddClaims(token.Claims);
+                        //var token2 = new JwtSecurityTokenHandler().ReadJwtToken(token);
+                        //var identity = new ClaimsPrincipal(new ClaimsIdentity(token2.Claims));
+                        //var identity2 = User.Identity as ClaimsIdentity;
+                        //identity2.AddClaims(token2.Claims);
 
                         //ClaimsIdentity identity3 = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
                         //AuthenticationManager.SignIn(new AuthenticationProperties()
@@ -93,12 +120,12 @@ namespace SportsMVC.Controllers
                         var identity4 = HttpContext.User.Identity as ClaimsIdentity;
                         if (identity!= null) 
                         {
-                            HttpContext.User.AddIdentity(identity2);
+                            HttpContext.User.AddIdentity(identity4!);
                             IEnumerable<Claim> claims = identity.Claims;
                         }
                         //var principal =ValidateToken(token);
                         //HttpContext.SignInAsync(principal);
-                        return RedirectToAction("Index", "User");
+                        return RedirectToAction("Profile", "User");
                     }
                     else
                     {
@@ -136,7 +163,7 @@ namespace SportsMVC.Controllers
                 {
                     if(response.Status==true)
                     {
-                        return RedirectToAction("Index", "User");
+                        return RedirectToAction("Profile", "User");
                     }
                     else
                     {
@@ -173,7 +200,6 @@ namespace SportsMVC.Controllers
                 notifications = Enumerable.Empty<String>();
                 ModelState.AddModelError(string.Empty, "server error");
             }
-
             return View(notifications);
         }
 
@@ -231,15 +257,12 @@ namespace SportsMVC.Controllers
                 //var postResult = postJob.Result;
                 var resultMessage = postResult.Content.ReadAsStringAsync().Result;
                 response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
-            ViewBag["msg"] = response.Message;
-
             if (postResult.IsSuccessStatusCode)
                 {
                     if (response.Status == true)
                     {
-                    ViewBag["msg"]= response.Message;
                         ModelState.AddModelError(string.Empty, response.Message!);
-                        return RedirectToAction("Index", "User");
+                        return RedirectToAction("Profile", "User");
                     }
                     else
                     {

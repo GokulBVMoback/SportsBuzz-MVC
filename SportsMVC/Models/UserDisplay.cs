@@ -16,5 +16,7 @@ public class UserDisplay
     public long? PhoneNum { get; set; }
 
     public string? UserRole { get; set; }
+    public bool? Active { get; set; }
+
 
 }

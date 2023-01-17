@@ -6,6 +6,21 @@
 }
 
 <h1>Index</h1>
+<input type="text" id="city" placeholder="City" name="city"/>
+
+
+
+
+<script type="text/javascript">
+    function CopyToLabel() {
+        //Reference the TextBox.
+        var txtName = document.getElementById("city"); 
+        window.location.href = '@Url.Action("Index", "Ground")?city=' + txtName.value;
+        //return false;
+    }
+</script>
+
+<input type="submit" value="Search" class="btn btn-primary" onclick="return CopyToLabel()" />
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -63,7 +78,7 @@
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "SearchByGroundName", new {  ground=item.Venue }) |
                 @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>

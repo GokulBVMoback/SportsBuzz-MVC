@@ -1,21 +1,14 @@
 ﻿<h1>SearchByTeamName</h1>
 
-<input type="text" id="team" name="team" />
-
-
-
 
 <script type="text/javascript">
     function CopyToLabel() {
         //Reference the TextBox.
         var txtName = document.getElementById("team");
-        lblName.innerHTML = txtName.value;
-
         window.location.href = '@Url.Action("SearchByTeamName", "Team")?team=' + txtName.value;
     }
 </script>
-
-<label id="lblName"></label>
+<input type="text" id="team" placeholder="Team Name" name="team" />
 
 <input type="submit" value="Search" class="btn btn-primary" onclick="return CopyToLabel()" />
 

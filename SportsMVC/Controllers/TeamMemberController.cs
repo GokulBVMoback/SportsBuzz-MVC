@@ -48,6 +48,30 @@ namespace SportsMVC.Controllers
             return View(teams);
         }
 
+        public ActionResult MyTeamMember()
+        {
+            string? token = HttpContext.Session.GetString(SessionKey);
+            IEnumerable<PlayerList> teams = null!;
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+             parameter: token);
+            var responseTask = client.GetAsync("TeamMember/MyTeamMembers");
+            responseTask.Wait();
+            var result = responseTask.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                var readJob = result.Content.ReadFromJsonAsync<IList<PlayerList>>();
+                readJob.Wait();
+                teams = readJob.Result!;
+            }
+            else
+            {
+                teams = Enumerable.Empty<PlayerList>();
+                ModelState.AddModelError(string.Empty, "server error");
+            }
+
+            return View(teams);
+        }
+
         public ActionResult AddPlayer()
         {
             return View();

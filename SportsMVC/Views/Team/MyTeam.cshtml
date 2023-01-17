@@ -1,25 +1,35 @@
 ﻿@model IEnumerable<Models.DbModels.TeamList>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "MyTeam";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
 <script type="text/javascript">
-    function CopyToLabel() {
-        //Reference the TextBox.
-        var txtName = document.getElementById("city");
-            window.location.href = '@Url.Action("Index", "Team")?city=' + txtName.value;
+    function response(id) {
+        var txt = document.getElementById('Activate');
+        if (txt.value == 'Activate') {
+            var text = "Do you want to Activate"
+            var text2 = "Activated successfully"
+        }
+        else {
+            var text = "Do you want to Deactivate"
+            var text2 = "Deactivated successfully"
+        }
+
+        if (confirm(text) == true) {
+            window.location.href = '@Url.Action("ChangeActiveStatus", "Team")?teamId='+id;
+            alert(text2);
+        }
+        else {
+            return false;
+        }
+
     }
 </script>
-<input type="text" id="city" placeholder="City" name="team" />
 
-<input type="submit" value="Search" class="btn btn-primary" onclick="return CopyToLabel()" />
+<h1>@Html.ActionLink("My Profile ","Profile","User")| <b>My Team</b></h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -46,6 +56,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.PhoneNum)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Active)
             </th>
             <th></th>
         </tr>
@@ -78,8 +91,21 @@
                 @Html.DisplayFor(modelItem => item.PhoneNum)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.ActionLink("Players","MyTeamMember","TeamMember") |
+                    @if ( item.Active == true)
+                    {
+                        <input type="submit" value="Deactivate" class="btn btn-danger" id="Activate" onclick="return response(@item.TeamId)" />
+                    }
+                    else
+                    {
+                        <input type="submit" value="Activate" class="btn btn-primary" id="Activate" onclick="return response(@item.TeamId)"/>
+                    }
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
                     @Html.ActionLink("Details", "SearchByTeamName", new { team=item.TeamName }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>
 }
