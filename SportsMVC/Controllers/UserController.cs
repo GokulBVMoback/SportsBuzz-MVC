@@ -18,6 +18,7 @@ using Microsoft.AspNet.Identity;
 using System.Net;
 using NuGet.Common;
 using System.Web;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SportsMVC.Controllers
 {
@@ -104,13 +105,19 @@ namespace SportsMVC.Controllers
                     if (response.Status == true)
                     {
                         var token = new JwtSecurityTokenHandler().ReadJwtToken(response.Message);
-                        var identity = new ClaimsPrincipal(new ClaimsIdentity(token.Claims));
-                        //var identity = (ClaimsIdentity)User.Identity;
-                        //identity.AddClaims(token.Claims);
+                        var identity = new ClaimsPrincipal(new ClaimsIdentity(token.Claims,"Basic"));
+                        var identit = (ClaimsIdentity)User.Identity;
+                        identit.AddClaims(token.Claims);
+                        var res2 = identity.Identity.IsAuthenticated;
+                        var res=identity.IsInRole("Team Manager");
+                        var isAuthenticated = identity.Identity.IsAuthenticated;
+                        //var user1 = ViewContext;
+                            HttpContext.User.AddIdentity(identit);
                         //var token2 = new JwtSecurityTokenHandler().ReadJwtToken(token);
                         //var identity = new ClaimsPrincipal(new ClaimsIdentity(token2.Claims));
-                        //var identity2 = User.Identity as ClaimsIdentity;
-                        //identity2.AddClaims(token2.Claims);
+                        var identity2 = User.Identity as ClaimsIdentity;
+                        identity2.AddClaims(token.Claims);
+
 
                         //ClaimsIdentity identity3 = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
                         //AuthenticationManager.SignIn(new AuthenticationProperties()
@@ -118,10 +125,14 @@ namespace SportsMVC.Controllers
                         //    IsPersistent = isPersistent
                         //}, identity3);
                         var identity4 = HttpContext.User.Identity as ClaimsIdentity;
+                        var res4 = identity.IsInRole("Admin");
+                        identity4.AddClaim((Claim)token.Claims);
                         if (identity!= null) 
                         {
-                            HttpContext.User.AddIdentity(identity4!);
+                            HttpContext.User.AddIdentity(identity2!);
                             IEnumerable<Claim> claims = identity.Claims;
+                            var res3= identity.Identity.IsAuthenticated;
+
                         }
                         //var principal =ValidateToken(token);
                         //HttpContext.SignInAsync(principal);

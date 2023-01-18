@@ -51,3 +51,14 @@ button.accept-policy {
     white-space: nowrap;
     line-height: 60px;
 }
+body {
+    background-image: url('d:\gokul\projects\sportsbuzz-mvc\sportsmvc\views\shared\bg.jpg') !important;
+}
+
+.container {
+    background-image: url(d:\gokul\projects\sportsbuzz-mvc\sportsmvc\views\shared\bg.jpg) !important;
+    padding: 52px;
+    margin: auto;
+    display: flow-root;
+    /* align-items: center; */
+}
