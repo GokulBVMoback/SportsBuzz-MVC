@@ -28,7 +28,7 @@
     }
 </script>
 
-<h1><b>Profile</b> |@Html.ActionLink(" My Team","MyTeam","Team")</h1>
+<h1><b>Profile</b> @if (User.IsInRole("Team Manager")){ @Html.ActionLink("| My Team", "MyTeam", "Team")}@if (User.IsInRole("Ground Manager")){ @Html.ActionLink("| My Ground", "MyGround", "Ground")}</h1>
 
 <div>
     <h4>Hi @Html.DisplayFor(model=>model.FirstName)</h4>
@@ -79,12 +79,15 @@
     </dl>
 </div>
 <div>
-    @if(Model.Active==true)
+    @if (Model != null)
     {
-        <input type="submit" value="Deactivate" class="btn btn-danger" id="Activate" onclick="return response()" />
-    }
-    else
-    {
-        <input type="submit" value="Activate" class="btn btn-primary" id="Activate" onclick="return response()"/>
+        @if(Model.Active==true)
+        {
+            <input type="submit" value="Deactivate" class="btn btn-danger" id="Activate" onclick="return response()" />
+        }
+        else
+        {
+            <input type="submit" value="Activate" class="btn btn-primary" id="Activate" onclick="return response()"/>
+        }
     }
 </div>

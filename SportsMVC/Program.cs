@@ -54,12 +54,15 @@ builder.Services.AddAuthentication(
 builder.Services.AddHttpClient("someClient", c =>
 {
     c.BaseAddress = new Uri("https://localhost:7191/api/");
+      c.DefaultRequestHeaders.Add("Authorization", "token");
+    c.DefaultRequestHeaders.Add("Accept", "application/json");
 });
+
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromSeconds(1800);
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });

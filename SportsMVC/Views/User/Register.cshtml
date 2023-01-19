@@ -25,11 +25,6 @@
             alert("Email must be filled out");
             return false;
         }
-        else{
-            (!email.match(mailformat))
-        alert("Invalid email address");
-        return false;
-        }
         var pnum = document.getElementById("pnum");
         if (pnum.value == "") {
             alert("PhoneNum must be filled out");
@@ -53,6 +48,9 @@
         if (password != cpassword) {
             alert("Password and ConfirmPassword are not matched");
             return false;
+        }
+        else {
+            email.match(mailformat);
         }
     }
 </script>

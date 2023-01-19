@@ -64,6 +64,30 @@ namespace SportsMVC.Controllers
             }
         }
 
+        public ActionResult MyGround()
+        {
+            string? token = HttpContext.Session.GetString(SessionKey);
+            IEnumerable<GroundList> grounds = null!;
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
+            var postJob = client.GetAsync("Ground/MyGrounds");
+            postJob.Wait();
+            var postResult = postJob.Result;
+            if (postResult.IsSuccessStatusCode)
+            {
+                var readJob = postResult.Content.ReadFromJsonAsync<IEnumerable<GroundList>>();
+                readJob.Wait();
+                grounds = readJob.Result!;
+                return View(grounds);
+            }
+            else
+            {
+                grounds = Enumerable.Empty<GroundList>();
+                ModelState.AddModelError(string.Empty, "server error");
+            }
+            return View(grounds);
+        }
+
         public ActionResult SearchByGroundName(string ground)
         {
             if (ground == null)
@@ -86,6 +110,34 @@ namespace SportsMVC.Controllers
             }
             ModelState.AddModelError(string.Empty, "server Error");
             return View(grounds);
+        }
+
+        public ActionResult ChangeActiveStatus(int groundId)
+        {
+            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, client.BaseAddress + "Ground/Changing_Active_Status?groundID=" + groundId);
+            string? token = HttpContext.Session.GetString(SessionKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
+            var postJob = client.SendAsync(req);
+            postJob.Wait();
+            var postResult = postJob.Result;
+            var resultMessage = postResult.Content.ReadAsStringAsync().Result;
+            response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+            if (postResult.IsSuccessStatusCode)
+            {
+                if (response.Status == true)
+                {
+                    ModelState.AddModelError(string.Empty, response.Message!);
+                    return RedirectToAction("MyGround", "Ground");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, response.Message!);
+                    return RedirectToAction("MyGround", "Ground");
+                }
+            }
+            ModelState.AddModelError(string.Empty, "server Error");
+            return View("MyGround");
         }
     }
 }

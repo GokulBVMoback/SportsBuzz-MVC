@@ -55,9 +55,17 @@ body {
     background-image: url('d:\gokul\projects\sportsbuzz-mvc\sportsmvc\views\shared\bg.jpg') !important;
 }
 
+li.log.nav-item {
+    padding-left: 578px;
+}
+
+li.logout.nav-item {
+    padding-left: 367px;
+}
+
 .container {
     background-image: url(d:\gokul\projects\sportsbuzz-mvc\sportsmvc\views\shared\bg.jpg) !important;
-    padding: 52px;
+    padding: 0px;
     margin: auto;
     display: flow-root;
     /* align-items: center; */

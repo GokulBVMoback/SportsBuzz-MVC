@@ -15,19 +15,10 @@ namespace SportsMVC.Controllers
 {
     public class BaseController : Controller
     {
-        //private readonly HttpClient client;
-        //readonly ITokenAcquisition _tokenAcquisition;
         public const string SessionKey = "UserId";
-        readonly string clientId = string.Empty;
-        readonly string _issuer = string.Empty;
-        readonly string _audience = string.Empty;
 
-        public BaseController(/*, ITokenAcquisition tokenAcquisition*/)
+        public BaseController()
         {
-            //client = factory.CreateClient("myApi");
-            //_tokenAcquisition = tokenAcquisition;
-            //client = new HttpClient();
-            //client.BaseAddress = new Uri("https://localhost:7191/api/");
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -37,69 +28,39 @@ namespace SportsMVC.Controllers
             return test;
         }
 
-        public static string SecretKey => "MySecretKey";
-        public static SymmetricSecurityKey SigningKey => new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
+        public static ClaimsPrincipal ValidateToken(string jwtToken,IConfiguration config)
+        {
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(jwtToken);
 
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public ClaimsPrincipal? pricipal(string jwtToken,string returnUrl = null)
-        //{
-        //    ViewData["ReturnUrl"] = returnUrl;
-        //    if (ModelState.IsValid)
-        //    {
-        //        var token = jwtToken;
+            IdentityModelEventSource.ShowPII = true;
 
-        //        SecurityToken validatedToken = null;
+            SecurityToken validatedToken;
+            TokenValidationParameters validationParameters = new TokenValidationParameters();
 
-        //        TokenValidationParameters validationParameters = new TokenValidationParameters()
-        //        {
-        //            ValidateIssuer = true,
-        //            ValidIssuer = "http://localhost:9001/",
+            validationParameters.ValidateLifetime = true;
+            var identity = new ClaimsPrincipal(new ClaimsIdentity(token.Claims));
 
-        //            ValidateAudience = true,
-        //            ValidAudience = "http://localhost:9000",
+            var TokenInfo = new Dictionary<string, string>();
+            var claims = token.Claims.ToList();
+            foreach (var claim in claims)
+            {
+                TokenInfo.Add(claim.Type, claim.Value);
+                if (claim.Type == "aud")
+                {
+                    validationParameters.ValidAudience = claim.Value;
+                }
+                else if(claim.Type == "iss")
+                {
+                    validationParameters.ValidIssuer = claim.Value;
+                }
+            }
+            validationParameters.IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
 
-        //            ValidateLifetime = true,
-        //            IssuerSigningKey = SigningKey
-        //        };
-
-        //        JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-
-        //        try
-        //        {
-        //            ClaimsPrincipal principal = handler.ValidateToken(token, validationParameters, out validatedToken);
-        //            return principal;
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            throw;
-        //        }
-        //    }
-        //    return null;
-        //}
-
-        //public static ClaimsPrincipal ValidateToken(string jwtToken)
-        //{
-        //    var token = new JwtSecurityTokenHandler().ReadJwtToken(jwtToken);
-
-        //    IdentityModelEventSource.ShowPII = true;
-
-        //    SecurityToken validatedToken;
-        //    TokenValidationParameters validationParameters = new TokenValidationParameters();
-
-        //    validationParameters.ValidateLifetime = true;
-        //    var identity = new ClaimsPrincipal(new ClaimsIdentity(token.Claims));
-
-        //    //validationParameters.ValidAudience = _audience.ToLower();
-        //    //validationParameters.ValidIssuer = _issuer.ToLower();
-        //    //validationParameters.IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes("s",3,323,8));
-
-        //    ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
+            ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
 
 
-        //    return principal;
-        //}
+            return principal;
+        }
 
     }
 }

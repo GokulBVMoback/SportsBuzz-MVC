@@ -29,6 +29,9 @@
 </script>
 
 <h1>@Html.ActionLink("My Profile ","Profile","User")| <b>My Team</b></h1>
+<p>
+    <a asp-action="TeamRegister">Create New</a>
+</p>
 
 <table class="table">
     <thead>
@@ -95,17 +98,19 @@
             </td>
             <td>
                 @Html.ActionLink("Players","MyTeamMember","TeamMember") |
-                    @if ( item.Active == true)
+                    @if (item.Active != null)
                     {
-                        <input type="submit" value="Deactivate" class="btn btn-danger" id="Activate" onclick="return response(@item.TeamId)" />
-                    }
-                    else
-                    {
-                        <input type="submit" value="Activate" class="btn btn-primary" id="Activate" onclick="return response(@item.TeamId)"/>
+                        @if (item.Active == true)
+                        {
+                            <input type="submit" value="Deactivate" class="btn btn-danger" id="Activate" onclick="return response(@item.TeamId)" />
+                        }
+                        else
+                        {
+                            <input type="submit" value="Activate" class="btn btn-primary" id="Activate" onclick="return response(@item.TeamId)"/>
+                        }
                     }
                     @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "SearchByTeamName", new { team=item.TeamName }) |
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    @Html.ActionLink("Details", "SearchByTeamName", new { team=item.TeamName })
             </td>
         </tr>
 }

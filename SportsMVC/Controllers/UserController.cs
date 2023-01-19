@@ -19,6 +19,8 @@ using System.Net;
 using NuGet.Common;
 using System.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace SportsMVC.Controllers
 {
@@ -27,9 +29,14 @@ namespace SportsMVC.Controllers
         private readonly HttpClient client;
         private CrudStatus response;
         public new const string SessionKey = "Token";
+        private readonly IConfiguration _config;
+        private ClaimsPrincipal principal;
 
-        public UserController(IHttpClientFactory clientFactory)
+
+        public UserController(IHttpClientFactory clientFactory, IConfiguration config)
         {
+            principal = new ClaimsPrincipal();
+            _config = config;
             response = new CrudStatus();
             client = clientFactory.CreateClient("someClient");
         }
@@ -73,12 +80,9 @@ namespace SportsMVC.Controllers
                 var readJob = result.Content.ReadFromJsonAsync<UserDisplay>();
                 readJob.Wait();
                 users = readJob.Result!;
+                return View(users);
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "server error");
-            }
-
+            ModelState.AddModelError(string.Empty, "server error");
             return View(users);
         }
 
@@ -99,43 +103,13 @@ namespace SportsMVC.Controllers
                 var postResult =postJob.Result;
                 var resultMessage = postResult.Content.ReadAsStringAsync().Result;
                 response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
-                HttpContext.Session.SetString(SessionKey, response.Message!);
                 if (postResult.IsSuccessStatusCode)
                 {
                     if (response.Status == true)
                     {
-                        var token = new JwtSecurityTokenHandler().ReadJwtToken(response.Message);
-                        var identity = new ClaimsPrincipal(new ClaimsIdentity(token.Claims,"Basic"));
-                        var identit = (ClaimsIdentity)User.Identity;
-                        identit.AddClaims(token.Claims);
-                        var res2 = identity.Identity.IsAuthenticated;
-                        var res=identity.IsInRole("Team Manager");
-                        var isAuthenticated = identity.Identity.IsAuthenticated;
-                        //var user1 = ViewContext;
-                            HttpContext.User.AddIdentity(identit);
-                        //var token2 = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                        //var identity = new ClaimsPrincipal(new ClaimsIdentity(token2.Claims));
-                        var identity2 = User.Identity as ClaimsIdentity;
-                        identity2.AddClaims(token.Claims);
-
-
-                        //ClaimsIdentity identity3 = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
-                        //AuthenticationManager.SignIn(new AuthenticationProperties()
-                        //{
-                        //    IsPersistent = isPersistent
-                        //}, identity3);
-                        var identity4 = HttpContext.User.Identity as ClaimsIdentity;
-                        var res4 = identity.IsInRole("Admin");
-                        identity4.AddClaim((Claim)token.Claims);
-                        if (identity!= null) 
-                        {
-                            HttpContext.User.AddIdentity(identity2!);
-                            IEnumerable<Claim> claims = identity.Claims;
-                            var res3= identity.Identity.IsAuthenticated;
-
-                        }
-                        //var principal =ValidateToken(token);
-                        //HttpContext.SignInAsync(principal);
+                        HttpContext.Session.SetString(SessionKey, response.Message!);
+                        principal=ValidateToken(response.Message!,_config);
+                        HttpContext.SignInAsync(principal);
                         return RedirectToAction("Profile", "User");
                     }
                     else
@@ -174,6 +148,9 @@ namespace SportsMVC.Controllers
                 {
                     if(response.Status==true)
                     {
+                        HttpContext.Session.SetString(SessionKey, response.Message!);
+                        principal = ValidateToken(response.Message!, _config);
+                        HttpContext.SignInAsync(principal);
                         return RedirectToAction("Profile", "User");
                     }
                     else
@@ -264,11 +241,9 @@ namespace SportsMVC.Controllers
                 var postJob = client.SendAsync(req);
                 postJob.Wait();
                 var postResult = postJob.Result;
-                //postJob.Wait();
-                //var postResult = postJob.Result;
                 var resultMessage = postResult.Content.ReadAsStringAsync().Result;
                 response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
-            if (postResult.IsSuccessStatusCode)
+                if (postResult.IsSuccessStatusCode)
                 {
                     if (response.Status == true)
                     {
@@ -283,6 +258,20 @@ namespace SportsMVC.Controllers
                 }
                 ModelState.AddModelError(string.Empty, "server Error");
                 return View();
+        }
+
+        public ActionResult LogOut()
+        {
+            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, client.BaseAddress + "User/LogOut");
+            string? token = HttpContext.Session.GetString(SessionKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
+            var postJob = client.SendAsync(req);
+            postJob.Wait();
+            var postResult = postJob.Result;
+            HttpContext.Session.Clear();
+            HttpContext.SignOutAsync();
+            return RedirectToAction("LogIn");
         }
     }
 }
