@@ -5,9 +5,11 @@ using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Models.DbModels;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NuGet.Common;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 
@@ -15,16 +17,46 @@ namespace SportsMVC.Controllers
 {
     public class BaseController : Controller
     {
-        public const string SessionKey = "UserId";
+        public const string SessionKey = "Token";
+        public const string SessionId = "Id";
+        public const string SessionTeamId = "teamId";
+        public const string SessionGrndId = "grndId";
+        public JsonSerializerSettings jsonSettings;
+
 
         public BaseController()
         {
+            jsonSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Error
+            };
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
         public string? GetToken(string sessionkey)
         {
             var test = HttpContext.Session.GetString(sessionkey);
+            return test;
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public int? GetId(string sessionid)
+        {
+            var test = HttpContext.Session.GetInt32(sessionid);
+            return test;
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public int? GetTeamId(string sessionteamid)
+        {
+            var test = HttpContext.Session.GetInt32(sessionteamid);
+            return test;
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public int? GetGrndId(string sessiongrndid)
+        {
+            var test = HttpContext.Session.GetInt32(sessiongrndid);
             return test;
         }
 

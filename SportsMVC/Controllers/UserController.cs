@@ -29,6 +29,7 @@ namespace SportsMVC.Controllers
         private readonly HttpClient client;
         private CrudStatus response;
         public new const string SessionKey = "Token";
+        public new const string SessionId = "Id";
         private readonly IConfiguration _config;
         private ClaimsPrincipal principal;
 
@@ -68,11 +69,12 @@ namespace SportsMVC.Controllers
 
         public ActionResult Profile()
         {
-            string? token = HttpContext.Session.GetString(SessionKey);
+            string? token = GetToken(SessionKey);
+            int? id = GetId(SessionId);
             UserDisplay users = null!;
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
                 parameter: token);
-            var responseTask = client.GetAsync("User/MyDetails");
+            var responseTask = client.GetAsync("User/MyDetails?id="+id);
             responseTask.Wait();
             var result = responseTask.Result;
             if (result.IsSuccessStatusCode)
@@ -102,13 +104,14 @@ namespace SportsMVC.Controllers
                 postJob.Wait();
                 var postResult =postJob.Result;
                 var resultMessage = postResult.Content.ReadAsStringAsync().Result;
-                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
                 if (postResult.IsSuccessStatusCode)
                 {
                     if (response.Status == true)
                     {
                         HttpContext.Session.SetString(SessionKey, response.Message!);
-                        principal=ValidateToken(response.Message!,_config);
+                        HttpContext.Session.SetInt32(SessionId, Convert.ToInt32(response.Id!));
+                        principal = ValidateToken(response.Message!,_config);
                         HttpContext.SignInAsync(principal);
                         return RedirectToAction("Profile", "User");
                     }
@@ -143,12 +146,13 @@ namespace SportsMVC.Controllers
                 postJob.Wait();
                 var postResult = postJob.Result;
                 var resultMessage = postResult.Content.ReadAsStringAsync().Result;
-                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
                 if (postResult.IsSuccessStatusCode)
                 {
                     if(response.Status==true)
                     {
                         HttpContext.Session.SetString(SessionKey, response.Message!);
+                        HttpContext.Session.SetInt32(SessionId, Convert.ToInt32(response.Id!));
                         principal = ValidateToken(response.Message!, _config);
                         HttpContext.SignInAsync(principal);
                         return RedirectToAction("Profile", "User");
@@ -170,11 +174,12 @@ namespace SportsMVC.Controllers
 
         public ActionResult Notifications()
         {
+            int? id = HttpContext.Session.GetInt32(SessionId);
             IEnumerable<String> notifications = null!;
             string? token = HttpContext.Session.GetString(SessionKey);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
                 parameter: token);
-            var responseTask = client.GetAsync("User/UserNotifications");
+            var responseTask = client.GetAsync("User/UserNotifications?id="+id);
             responseTask.Wait();
             var result = responseTask.Result;
             if (result.IsSuccessStatusCode)
@@ -208,7 +213,7 @@ namespace SportsMVC.Controllers
                 postJob.Wait();
                 var postResult = postJob.Result;
                 var resultMessage = postResult.Content.ReadAsStringAsync().Result;
-                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage,jsonSettings)!;
                 if (postResult.IsSuccessStatusCode)
                 {
 
@@ -234,30 +239,31 @@ namespace SportsMVC.Controllers
 
         public ActionResult ChangeActiveStatus()
         {
-                HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, client.BaseAddress + "User/Changing_Active_Status");
-                string? token = HttpContext.Session.GetString(SessionKey);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
-                    parameter: token);
-                var postJob = client.SendAsync(req);
-                postJob.Wait();
-                var postResult = postJob.Result;
-                var resultMessage = postResult.Content.ReadAsStringAsync().Result;
-                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
-                if (postResult.IsSuccessStatusCode)
+            int? id = HttpContext.Session.GetInt32(SessionId);
+            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, client.BaseAddress + "User/Changing_Active_Status?id="+id);
+            string? token = HttpContext.Session.GetString(SessionKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
+            var postJob = client.SendAsync(req);
+            postJob.Wait();
+            var postResult = postJob.Result;
+            var resultMessage = postResult.Content.ReadAsStringAsync().Result;
+            response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
+            if (postResult.IsSuccessStatusCode)
+            {
+                if (response.Status == true)
                 {
-                    if (response.Status == true)
-                    {
-                        ModelState.AddModelError(string.Empty, response.Message!);
-                        return RedirectToAction("Profile", "User");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, response.Message!);
-                        return View();
-                    }
+                    ModelState.AddModelError(string.Empty, response.Message!);
+                    return RedirectToAction("Profile", "User");
                 }
-                ModelState.AddModelError(string.Empty, "server Error");
-                return View();
+                else
+                {
+                    ModelState.AddModelError(string.Empty, response.Message!);
+                    return View();
+                }
+            }
+            ModelState.AddModelError(string.Empty, "server Error");
+            return View("Profile");
         }
 
         public ActionResult LogOut()

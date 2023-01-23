@@ -1,27 +1,42 @@
-﻿@model Models.DbModels.TeamRegister
+﻿@model Models.DbModels.GroundRegister
 
 @{
-    ViewData["Title"] = "TeamRegister";
+    ViewData["Title"] = "GroundRegister";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>TeamRegister</h1>
+<h1>GroundRegister</h1>
 
-<h4>TeamRegister</h4>
+<h4>GroundRegister</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="TeamRegister">
+        <form asp-action="GroundRegister">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="TeamName" class="control-label"></label>
-                <input asp-for="TeamName" class="form-control" />
-                <span asp-validation-for="TeamName" class="text-danger"></span>
+                <label asp-for="CompanyName" class="control-label"></label>
+                <input asp-for="CompanyName" class="form-control" />
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Venue" class="control-label"></label>
+                <input asp-for="Venue" class="form-control" />
+                <span asp-validation-for="Venue" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="City" class="control-label"></label>
                 <input asp-for="City" class="form-control" />
                 <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Latitude" class="control-label"></label>
+                <input asp-for="Latitude" class="form-control" />
+                <span asp-validation-for="Latitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Longitude" class="control-label"></label>
+                <input asp-for="Longitude" class="form-control" />
+                <span asp-validation-for="Longitude" class="text-danger"></span>
             </div>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" asp-for="SportType" id="badmindon" class="form-control" value="1" />
@@ -33,16 +48,6 @@
                 <span asp-validation-for="SportType" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhoneNum" class="control-label"></label>
-                <input asp-for="PhoneNum" class="form-control" />
-                <span asp-validation-for="PhoneNum" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -50,7 +55,7 @@
 </div>
 
 <div>
-    <a asp-controller="Team" asp-action="MyTeam">Back to List</a>
+    <a asp-action="MyGround">Back to List</a>
 </div>
 
 @section Scripts {

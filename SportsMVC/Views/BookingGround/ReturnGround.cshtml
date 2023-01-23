@@ -1,37 +1,14 @@
 ﻿@model IEnumerable<Models.DbModels.GroundList>
 
 @{
-    ViewData["Title"] = "MyGround";
+    ViewData["Title"] = "ReturnGround";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<script type="text/javascript">
-    function response(id) {
-        var txt = document.getElementById('Activate');
-        if (txt.value == 'Activate') {
-            var text = "Do you want to Activate"
-            var text2 = "Activated successfully"
-        }
-        else {
-            var text = "Do you want to Deactivate"
-            var text2 = "Deactivated successfully"
-        }
-
-        if (confirm(text) == true) {
-            window.location.href = '@Url.Action("ChangeActiveStatus", "Ground")?groundId=' + id;
-            alert(text2);
-        }
-        else {
-            return false;
-        }
-
-    }
-</script>
-
-<h1>@Html.ActionLink("My Profile ","Profile","User")| <b>My Ground</b></h1>
+<h1>ReturnGround</h1>
 
 <p>
-    <a asp-action="GroundRegister">Create New</a>
+    <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -90,21 +67,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Active)
             </td>
-                <td>
-                    @if (item.Active != null)
-                    {
-                        @if (item.Active == true)
-                        {
-                            <input type="submit" value="Deactivate" class="btn btn-danger" id="Activate" onclick="return response(@item.GroundId)" />
-                        }
-                        else
-                        {
-                            <input type="submit" value="Activate" class="btn btn-primary" id="Activate" onclick="return response(@item.GroundId)" />
-                        }
-                    }
-                    @Html.ActionLink("Edit", "EditGround", new {  groundId=item.GroundId  }) |
+            <td>
+                    @Html.ActionLink("Book", "BookingGround", new {  id=item.GroundId }) |
                     @Html.ActionLink("Details", "SearchByGroundName", new { ground=item.Venue })
-                </td>
+            </td>
         </tr>
 }
     </tbody>

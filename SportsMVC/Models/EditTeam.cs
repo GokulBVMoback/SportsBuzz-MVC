@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Models.DbModels
 {
-    public class CrudStatus
+    public class EditTeam
     {
-        public bool Status { get; set; }
-        public string? Message { get; set; }
-        public int? Id { get; set; }
+        public int TeamId { get; set; }
+
+        public string? TeamName { get; set; }
     }
 }

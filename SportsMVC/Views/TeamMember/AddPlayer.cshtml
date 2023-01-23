@@ -39,11 +39,6 @@
                 <span asp-validation-for="State" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TeamId" class="control-label"></label>
-                <input asp-for="TeamId" class="form-control" />
-                <span asp-validation-for="TeamId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -51,7 +46,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Team" asp-action="MyTeam">Back to List</a>
 </div>
 
 @section Scripts {

@@ -8,6 +8,7 @@ using Models.DbModels;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace SportsMVC.Controllers
@@ -17,7 +18,7 @@ namespace SportsMVC.Controllers
         private readonly HttpClient client;
         private CrudStatus response;
         public new const string SessionKey = "Token";
-
+        public new const string SessionTeamId = "teamId";
 
         public TeamController(IHttpClientFactory clientFactory)
         {
@@ -93,11 +94,12 @@ namespace SportsMVC.Controllers
 
         public ActionResult MyTeam()
         {
-            string? token = HttpContext.Session.GetString(SessionKey);
+            int? id = GetId(SessionId);
+            string? token = GetToken(SessionKey);
             IEnumerable<TeamList> teams = null!;
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
                 parameter: token);
-            var postJob = client.GetAsync("Team/MyTeams");
+            var postJob = client.GetAsync("Team/MyTeams?id="+id);
             postJob.Wait();
             var postResult = postJob.Result;
             if (postResult.IsSuccessStatusCode)
@@ -126,18 +128,67 @@ namespace SportsMVC.Controllers
         {
             try
             {
-                string? token = HttpContext.Session.GetString(SessionKey);
+                string? token = GetToken(SessionKey);
+                int? id= GetId(SessionId);
+                team.UserId = id;
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
                 parameter: token);
                 var postJob = client.PostAsJsonAsync<TeamRegister>("Team/TeamRegistration", team);
                 postJob.Wait();
                 var postResult = postJob.Result;
                 var resultMessage = postResult.Content.ReadAsStringAsync().Result;
-                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
                 if (postResult.IsSuccessStatusCode)
                 {
                     if (response.Status == true)
                     {
+                        return RedirectToAction("MyTeam", "Team");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, response.Message!);
+                        return View(team);
+                    }
+                }
+                ModelState.AddModelError(string.Empty, "server Error");
+                return View(team);
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        public ActionResult EditTeam(int teamId)
+        {
+            HttpContext.Session.SetInt32(SessionTeamId, teamId);
+            return View();
+        }
+
+        // POST: UserController/Create
+        [HttpPost]
+        [ActionName("EditTeam")]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditTeam(int teamId, EditTeam team)
+        {
+            try
+            {
+                teamId = (int)GetTeamId(SessionTeamId)!;
+                team.TeamId = teamId;
+                string? token = HttpContext.Session.GetString(SessionKey);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                    parameter: token);
+                var postJob = client.PutAsJsonAsync<EditTeam>("Team/EditTeam", team);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                var resultMessage = postResult.Content.ReadAsStringAsync().Result;
+                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
+                if (postResult.IsSuccessStatusCode)
+                {
+
+                    if (response.Status == true)
+                    {
+                        ModelState.AddModelError(string.Empty, response.Message!);
                         return RedirectToAction("MyTeam", "Team");
                     }
                     else
@@ -165,7 +216,7 @@ namespace SportsMVC.Controllers
             postJob.Wait();
             var postResult = postJob.Result;
             var resultMessage = postResult.Content.ReadAsStringAsync().Result;
-            response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+            response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
             if (postResult.IsSuccessStatusCode)
             {
                 if (response.Status == true)

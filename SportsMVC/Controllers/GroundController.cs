@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NuGet.Common;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace SportsMVC.Controllers
 {
@@ -15,6 +16,8 @@ namespace SportsMVC.Controllers
         private readonly HttpClient client;
         private CrudStatus response;
         public new const string SessionKey = "Token";
+        public new const string SessionGrndId = "grndId";
+
         public GroundController(IHttpClientFactory clientFactory)
         {
             response = new CrudStatus();
@@ -43,7 +46,6 @@ namespace SportsMVC.Controllers
                     grounds = Enumerable.Empty<GroundList>();
                     ModelState.AddModelError(string.Empty, "server error");
                 }
-
                 return View(grounds);
             }
             else
@@ -66,11 +68,12 @@ namespace SportsMVC.Controllers
 
         public ActionResult MyGround()
         {
+            int? id = GetId(SessionId);
             string? token = HttpContext.Session.GetString(SessionKey);
             IEnumerable<GroundList> grounds = null!;
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
                 parameter: token);
-            var postJob = client.GetAsync("Ground/MyGrounds");
+            var postJob = client.GetAsync("Ground/MyGrounds?id="+id);
             postJob.Wait();
             var postResult = postJob.Result;
             if (postResult.IsSuccessStatusCode)
@@ -112,6 +115,95 @@ namespace SportsMVC.Controllers
             return View(grounds);
         }
 
+        public ActionResult GroundRegister()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ActionName("GroundRegister")]
+        [ValidateAntiForgeryToken]
+        public ActionResult GroundRegister(GroundRegister ground)
+        {
+            try
+            {
+                string? token = HttpContext.Session.GetString(SessionKey);
+                int? id = GetId(SessionId);
+                ground.UserId = id;
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                parameter: token);
+                var postJob = client.PostAsJsonAsync<GroundRegister>("Ground/AddGround", ground);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                var resultMessage = postResult.Content.ReadAsStringAsync().Result;
+                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
+                if (postResult.IsSuccessStatusCode)
+                {
+                    if (response.Status == true)
+                    {
+                        return RedirectToAction("MyGround", "Ground");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, response.Message!);
+                        return View(ground);
+                    }
+                }
+                ModelState.AddModelError(string.Empty, "server Error");
+                return View(ground);
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        public ActionResult EditGround(int groundId)
+        {
+            HttpContext.Session.SetInt32(SessionGrndId, groundId);
+            return View();
+        }
+
+        [HttpPost]
+        [ActionName("EditGround")]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditGround(int groundId, EditGround ground)
+        {
+            try
+            {
+                groundId = (int)GetGrndId(SessionGrndId)!;
+                ground.GroundId = groundId;
+                string? token = GetToken(SessionKey);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: "Bearer",
+                    parameter: token);
+                var postJob = client.PutAsJsonAsync<EditGround>("Ground/EditGround", ground);
+                postJob.Wait();
+                var postResult = postJob.Result;
+                var resultMessage = postResult.Content.ReadAsStringAsync().Result;
+                response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
+                if (postResult.IsSuccessStatusCode)
+                {
+
+                    if (response.Status == true)
+                    {
+                        ModelState.AddModelError(string.Empty, response.Message!);
+                        return RedirectToAction("MyGround", "Ground");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, response.Message!);
+                        return View(ground);
+                    }
+                }
+                ModelState.AddModelError(string.Empty, "server Error");
+                return View(ground);
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
         public ActionResult ChangeActiveStatus(int groundId)
         {
             HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Put, client.BaseAddress + "Ground/Changing_Active_Status?groundID=" + groundId);
@@ -122,7 +214,7 @@ namespace SportsMVC.Controllers
             postJob.Wait();
             var postResult = postJob.Result;
             var resultMessage = postResult.Content.ReadAsStringAsync().Result;
-            response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage)!;
+            response = JsonConvert.DeserializeObject<CrudStatus>(resultMessage, jsonSettings)!;
             if (postResult.IsSuccessStatusCode)
             {
                 if (response.Status == true)

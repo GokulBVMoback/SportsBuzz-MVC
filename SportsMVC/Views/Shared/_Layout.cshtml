@@ -43,6 +43,12 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="TeamMember" asp-action="Index">Players</a>
                                 </li>
                             }
+                            @if(User.IsInRole("Team Manager"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="BookingGround" asp-action="GetAvailableGround">Book Match</a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Notifications">Notifications</a>
                             </li>

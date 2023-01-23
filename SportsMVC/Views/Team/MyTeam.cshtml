@@ -97,7 +97,8 @@
                 @Html.DisplayFor(modelItem => item.Active)
             </td>
             <td>
-                @Html.ActionLink("Players","MyTeamMember","TeamMember") |
+                    @Html.ActionLink("Add Players","AddPlayer","TeamMember",new{teamId=item.TeamId}) |
+                    @Html.ActionLink("Players","MyTeamMember","TeamMember",new{teamId=item.TeamId}) |
                     @if (item.Active != null)
                     {
                         @if (item.Active == true)
@@ -109,7 +110,7 @@
                             <input type="submit" value="Activate" class="btn btn-primary" id="Activate" onclick="return response(@item.TeamId)"/>
                         }
                     }
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Edit", "EditTeam", new {  teamId=item.TeamId }) |
                     @Html.ActionLink("Details", "SearchByTeamName", new { team=item.TeamName })
             </td>
         </tr>
