@@ -28,7 +28,14 @@
     }
 </script>
 
-<h1><b>Profile</b> @if (User.IsInRole("Team Manager")){ @Html.ActionLink("| My Team", "MyTeam", "Team")}@if (User.IsInRole("Ground Manager")){ @Html.ActionLink("| My Ground", "MyGround", "Ground")}</h1>
+<h1><b>Profile</b> @if (User.IsInRole("Team Manager"))
+    {
+        @Html.ActionLink("| My Team", "MyTeam", "Team") @Html.ActionLink(" | Booked Details", "MyBooking", "BookingGround")
+    }@if (User.IsInRole("Ground Manager"))
+    {
+        @Html.ActionLink("| My Ground", "MyGround", "Ground")
+        @Html.ActionLink(" | Booked Details", "User", "Notifications")
+    }</h1>
 
 <div>
     <h4>Hi @Html.DisplayFor(model=>model.FirstName)</h4>

@@ -68,7 +68,7 @@
                 @Html.DisplayFor(modelItem => item.Active)
             </td>
             <td>
-                    @Html.ActionLink("Book", "BookingGround", new {  id=item.GroundId }) |
+                    @Html.ActionLink("Book", "BookingGround", new {  grndid=item.GroundId }) |
                     @Html.ActionLink("Details", "SearchByGroundName", new { ground=item.Venue })
             </td>
         </tr>

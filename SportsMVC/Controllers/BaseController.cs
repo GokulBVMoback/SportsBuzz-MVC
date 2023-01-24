@@ -21,6 +21,8 @@ namespace SportsMVC.Controllers
         public const string SessionId = "Id";
         public const string SessionTeamId = "teamId";
         public const string SessionGrndId = "grndId";
+        public const string SessionDate = "date";
+        public const string SessionSession = "session";
         public JsonSerializerSettings jsonSettings;
 
 
@@ -55,6 +57,20 @@ namespace SportsMVC.Controllers
 
         [ApiExplorerSettings(IgnoreApi = true)]
         public int? GetGrndId(string sessiongrndid)
+        {
+            var test = HttpContext.Session.GetInt32(sessiongrndid);
+            return test;
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public string? GetDate(string sessionteamid)
+        {
+            var test = HttpContext.Session.GetString(sessionteamid);
+            return test;
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public int? GetSession(string sessiongrndid)
         {
             var test = HttpContext.Session.GetInt32(sessiongrndid);
             return test;
