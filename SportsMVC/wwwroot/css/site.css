@@ -13,6 +13,17 @@ html {
   min-height: 100%;
 }
 
-body {
+/*body {
+    height: 100%;
+    width: 100%;
+    background-image: url('d:\gokul\projects\sportsbuzz-mvc\sportsmvc\views\shared\bg.jpg');
     margin-bottom: 60px;
+}*/
+
+body {
+    background-image: url("d:\gokul\projects\sportsbuzz-mvc\sportsmvc\views\shared\bg.jpg");
+    background-size: 100%;
+    margin-bottom: 60px;
+    background-repeat: no-repeat;
+    display: block;
 }

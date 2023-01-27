@@ -43,34 +43,37 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="TeamMember" asp-action="Index">Players</a>
                                 </li>
                             }
-                            @if(User.IsInRole("Team Manager"))
+                            @if (User.IsInRole("Team Manager"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="BookingGround" asp-action="GetAvailableGround">Book Match</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="BookingGround" asp-action="GetAvailableGround">Book Ground</a>
                                 </li>
                             }
-                            <li class="logout nav-item">
+                        }
+                    </ul>
+                    <ul class="log navbar-nav flex-grow-1">
+                    @if (User.Identity!.IsAuthenticated)
+                    {
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="LogOut">LogOut</a>
                             </li>
-                        }
-                        else
-                        {
-                            <li class="log nav-item">
+                    }
+                    else
+                    {
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Register">Register</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="LogIn">LogIn</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="ForgotPassword">Forgot Password</a>
-                            </li>
-                        }
+                    }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
     <div class="container">
+        <div class="gokul">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -81,6 +84,7 @@
             &copy; 2022 - Sports Buzz - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
