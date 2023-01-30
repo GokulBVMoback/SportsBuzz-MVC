@@ -45,6 +45,8 @@ button.accept-policy {
 }
 
 .footer {
+    background: #f0f8ffe8;
+    border-radius: 26px;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -52,18 +54,26 @@ button.accept-policy {
     line-height: 60px;
 }
 body {
-    height:100%;
-    width:100%;
-    background-image: url('d:\gokul\projects\sportsbuzz-mvc\sportsmvc\views\shared\bg.jpg') !important;
+    background-image: url("~/css/bg.jpg");
+    background-size: 100%;
+    margin-bottom: 60px;
+    background-repeat: no-repeat;
+    display: block;
+    height: 100%;
+    width: 100%;
 }
 
 li.log.nav-item {
     padding-left: 578px;
 }
-
+main {
+    background: #f0f8ffe8;
+    padding: 17px;
+    border-radius: 26px;
+}
 
 .gokul {
-    background-image: url('d:\gokul\projects\sportsbuzz-mvc\sportsmvc\views\shared\bg.jpg');
+    background-image: url("bg.jpg");
     background-size: 100%;
     margin-bottom: 60px;
     background-repeat: no-repeat;
