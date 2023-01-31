@@ -8,12 +8,13 @@ a.navbar-brand {
 }
 
 nav.navbar.navbar-expand-sm.navbar-toggleable-sm.navbar-light.bg-white.border-bottom.box-shadow.mb-3 {
-    background-color: darkcyan !important;
+    background-color: purple !important;
 }
 
 a {
     color: #0077cc;
 }
+
 
 .btn-primary {
     color: #fff;
@@ -45,14 +46,17 @@ button.accept-policy {
 }
 
 .footer {
-    background: #f0f8ffe8;
+    background: #ffffff80;
     border-radius: 26px;
     position: absolute;
     bottom: 0;
     width: 100%;
     white-space: nowrap;
     line-height: 60px;
+    color:black !important;
 }
+
+
 body {
     background-image: url("~/css/bg.jpg");
     background-size: 100%;
@@ -67,25 +71,12 @@ li.log.nav-item {
     padding-left: 578px;
 }
 main {
-    background: #f0f8ffe8;
+    background: #f0f8ffad;
     padding: 17px;
     border-radius: 26px;
 }
 
-.gokul {
-    background-image: url("bg.jpg");
-    background-size: 100%;
-    margin-bottom: 60px;
-    background-repeat: no-repeat;
-    display: block;
-}
-
 ul.log.navbar-nav.flex-grow-1 {
     position: absolute;
-    left: 90%;
-}
-
-.container {
-
-    /* align-items: center; */
+    left: 85%;
 }

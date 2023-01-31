@@ -13,11 +13,46 @@ html {
   min-height: 100%;
 }
 
+a.footer {
+    color: blue;
+}
+
+tr:nth-child(even) {
+    background-color: darkgray;
+}
+
+table{
+    background-color:burlywood;
+    border:1px solid;
+}
 
 body {
-    background-image: url("bg.jpg");
+    background-image: url("bg2.jpg");
     background-size: 100%;
     margin-bottom: 60px;
     background-repeat: no-repeat;
     display: block;
 }
+
+.navbar-light .navbar-nav .nav-link {
+    color: white !important;
+    font-weight: bold;
+}
+
+a.nav-link.text-dark {
+}
+
+    a.nav-link.text-dark:hover {
+        transform: rotateY(360deg);
+        transition: all 1.5s linear 0s;
+    }
+
+.navbar-light .navbar-brand {
+    color:white;
+    font-weight:bold;
+}
+    .navbar-light .navbar-brand:hover {
+        color: white;
+        transform: rotateY(360deg);
+        transition: all 1.5s linear 0s;
+    }
