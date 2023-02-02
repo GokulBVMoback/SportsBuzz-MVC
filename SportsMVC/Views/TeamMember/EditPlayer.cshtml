@@ -7,39 +7,59 @@
 
 <h1>EditPlayer</h1>
 
+<script type="text/javascript">
+    function validateForm() {
+        var fname = document.getElementById("fname");
+        if (fname.value == "") {
+            alert("First Name must be filled out");
+            return false;
+        }
+        var lname = document.getElementById("lname");
+        if (lname.value == "") {
+            alert("Last Name must be filled out");
+            return false;
+        }
+        var age = document.getElementById("age");
+        if (age.value == "") {
+            alert("Age must be filled out");
+            return false;
+        }
+        var jno = document.getElementById("jno");
+        if (jno.value == "") {
+            alert("Jersey Number must be filled out");
+            return false;
+        }
+    }
+</script>
+
 <h4>EditPlayer</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="EditPlayer">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-         @*   <div class="form-group">
-                <label asp-for="MemberId" class="control-label"></label>
-                <input asp-for="MemberId" class="form-control" />
-                <span asp-validation-for="MemberId" class="text-danger"></span>
-            </div>*@
             <div class="form-group">
                 <label asp-for="PlayerFirstName" class="control-label"></label>
-                <input asp-for="PlayerFirstName" class="form-control" />
+                <input asp-for="PlayerFirstName" id="fname" class="form-control" />
                 <span asp-validation-for="PlayerFirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="PlayerLastName" class="control-label"></label>
-                <input asp-for="PlayerLastName" class="form-control" />
+                <input asp-for="PlayerLastName" id="lname" class="form-control" />
                 <span asp-validation-for="PlayerLastName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Age" class="control-label"></label>
-                <input asp-for="Age" class="form-control" />
+                <input asp-for="Age" id="age" class="form-control" />
                 <span asp-validation-for="Age" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="JerseyNo" class="control-label"></label>
-                <input asp-for="JerseyNo" class="form-control" />
+                <input asp-for="JerseyNo" id="jno" class="form-control" />
                 <span asp-validation-for="JerseyNo" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" onclick="return validateForm()" />
             </div>
         </form>
     </div>

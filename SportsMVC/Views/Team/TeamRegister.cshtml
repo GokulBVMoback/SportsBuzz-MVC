@@ -7,6 +7,42 @@
 
 <h1>TeamRegister</h1>
 
+<script type="text/javascript">
+    function validateForm() {
+        var mailformat = /^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        var fname = document.getElementById("tname");
+        if (fname.value == "") {
+            alert("First Name must be filled out");
+            return false;
+        }
+        var city = document.getElementById("city");
+        if (city.value == "") {
+            alert("City must be filled out");
+            return false;
+        }
+        var stype = document.getElementsByName("stype");
+        if (stype[0].checked == false) {
+            if (stype[1].checked == false) {
+                alert("Sport type must be select!");
+                return false;
+            }
+        } 
+        var email = document.getElementById("email");
+        if (email.value == "") {
+            alert("Email must be filled out");
+            return false;
+        }
+        var phone = document.getElementById("phone");
+        if (phone.value == "") {
+            alert("Phone Number must be filled out");
+            return false;
+        }
+        else {
+            email.match(mailformat);
+        }
+    }
+</script>
+
 <h4>TeamRegister</h4>
 <hr />
 <div class="row">
@@ -15,35 +51,35 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="TeamName" class="control-label"></label>
-                <input asp-for="TeamName" class="form-control" />
+                <input asp-for="TeamName" id="tname" class="form-control" />
                 <span asp-validation-for="TeamName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="City" class="control-label"></label>
-                <input asp-for="City" class="form-control" />
+                <input asp-for="City" id="city" class="form-control" />
                 <span asp-validation-for="City" class="text-danger"></span>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" asp-for="SportType" id="badmindon" class="form-control" value="1" />
+                <input class="form-check-input" class="stype" type="radio" asp-for="SportType" id="badmindon" class="form-control" value="1" />
                 <label class="form-check-label" for="badmindon">Badmindon</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" asp-for="SportType" id="tennis" class="form-control" value="2" />
+                <input class="form-check-input" class="stype" type="radio" asp-for="SportType" id="tennis" class="form-control" value="2" />
                 <label class="form-check-label" for="tennis">Tennis</label>
                 <span asp-validation-for="SportType" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" id="email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="PhoneNum" class="control-label"></label>
-                <input asp-for="PhoneNum" class="form-control" />
+                <input asp-for="PhoneNum" id="phone" class="form-control" />
                 <span asp-validation-for="PhoneNum" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary" onclick="return validateForm()" />
             </div>
         </form>
     </div>

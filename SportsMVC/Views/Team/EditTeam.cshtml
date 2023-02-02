@@ -7,6 +7,16 @@
 
 <h1>EditTeam</h1>
 
+<script type="text/javascript">
+    function validateForm() {
+        var tname = document.getElementById("tname");
+        if (tname.value == "") {
+            alert("Team Name must be filled out");
+            return false;
+        }
+    }
+</script>
+
 <h4>EditTeam</h4>
 <hr />
 <div class="row">
@@ -20,11 +30,11 @@
             </div>*@
             <div class="form-group">
                 <label asp-for="TeamName" class="control-label"></label>
-                <input asp-for="TeamName" class="form-control" />
+                <input asp-for="TeamName" id="tname" class="form-control" />
                 <span asp-validation-for="TeamName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" onclick="return validateForm()" />
             </div>
         </form>
     </div>

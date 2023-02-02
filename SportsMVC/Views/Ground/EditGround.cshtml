@@ -7,29 +7,39 @@
 
 <h1>EditGround</h1>
 
+<script type="text/javascript">
+    function validateForm() {
+        var cname = document.getElementById("cname");
+        if (cname.value == "") {
+            alert("Company Name must be filled out");
+            return false;
+        }
+        var venue = document.getElementById("venue");
+        if (venue.value == "") {
+            alert("Venue must be filled out");
+            return false;
+        }
+    }
+</script>
+
 <h4>EditGround</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="EditGround">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-@*            <div class="form-group">
-                <label asp-for="GroundId" class="control-label"></label>
-                <input asp-for="GroundId" class="form-control" />
-                <span asp-validation-for="GroundId" class="text-danger"></span>
-            </div>*@
             <div class="form-group">
                 <label asp-for="CompanyName" class="control-label"></label>
-                <input asp-for="CompanyName" class="form-control" />
+                <input asp-for="CompanyName" id="cname" class="form-control" />
                 <span asp-validation-for="CompanyName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Venue" class="control-label"></label>
-                <input asp-for="Venue" class="form-control" />
+                <input asp-for="Venue" id="venue" class="form-control" />
                 <span asp-validation-for="Venue" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" onclick="return validateForm()"/>
             </div>
         </form>
     </div>

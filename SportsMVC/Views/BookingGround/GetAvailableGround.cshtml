@@ -7,6 +7,37 @@
 
 <h1>GetAvailableGround</h1>
 
+<script type="text/javascript">
+    function validateForm() {
+        var city = document.getElementById("city");
+        if (city.value == "") {
+            alert("City must be filled out");
+            return false;
+        }
+        var stype = document.getElementsByName("session");
+        if (stype[0].checked == false) {
+            if (stype[1].checked == false) {
+                if (stype[2].checked == false) {
+                    alert("Session must be select!");
+                    return false;
+                }
+            }
+        }
+        var date = document.getElementById("date");
+        if (date.value == "") {
+            alert("Date must be filled out");
+            return false;
+        }
+        var stype = document.getElementsByName("stype");
+        if (stype[0].checked == false) {
+            if (stype[1].checked == false) {
+                alert("Sport type must be select!");
+                return false;
+            }
+        }
+    }
+</script>
+
 <h4>SearchAvailableGround</h4>
 <hr />
 <div class="row">
@@ -15,38 +46,38 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="City" class="control-label"></label>
-                <input asp-for="City" class="form-control" />
+                <input asp-for="City" id="city" class="form-control" />
                 <span asp-validation-for="City" class="text-danger"></span>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" asp-for="SessionId" id="earlymorning" class="form-control" value="1" />
+                <input class="form-check-input" name="session" type="radio" asp-for="SessionId" id="earlymorning" class="form-control" value="1" />
                 <label class="form-check-label" for="earlymorning">06:30 am</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" asp-for="SessionId" id="morning" class="form-control" value="2" />
+                <input class="form-check-input" name="session" type="radio" asp-for="SessionId" id="morning" class="form-control" value="2" />
                 <label class="form-check-label" for="morning">10:00 am</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" asp-for="SessionId" id="noon" class="form-control" value="3" />
+                <input class="form-check-input" name="session" type="radio" asp-for="SessionId" id="noon" class="form-control" value="3" />
                 <label class="form-check-label" for="noon">02:00 pm</label>
                 <span asp-validation-for="SessionId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" type="date" dateformat="d M y" class="form-control" />
+                <input asp-for="Date" id="date" type="date" dateformat="d M y" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" asp-for="SportType" id="badminton" class="form-control" value="Badminton" />
+                <input class="form-check-input" name="stype" type="radio" asp-for="SportType" id="badminton" class="form-control" value="Badminton" />
                 <label class="form-check-label" for="badminton">Badminton</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" asp-for="SportType" id="tennis" class="form-control" value="Tennis" />
+                <input class="form-check-input" name="stype" type="radio" asp-for="SportType" id="tennis" class="form-control" value="Tennis" />
                 <label class="form-check-label" for="tennis">Tennis</label>
                 <span asp-validation-for="SportType" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Search" class="btn btn-primary" onclick="return validateForm()" />
             </div>
         </form>
     </div>
